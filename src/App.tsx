@@ -3,14 +3,18 @@ import { Form, TimePicker, Typography } from "antd";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import TownSelect, { Timezone } from "./components/TownSelect";
+import TownSelect from "./components/TownSelect";
 import { useEffect, useState } from "react";
 import { getListOfTimeZones } from "./api";
-import getFormattedTimezones from "./utils/getFormattedTimezones";
+import getFormattedTimezones, {
+  TimezoneForSelect,
+} from "./utils/getFormattedTimezones";
+import { TIME_FORMAT } from "./utils/constants";
+import getSearchedTime from "./utils/getSearchedTime";
 
 dayjs.extend(customParseFormat);
 
-interface FormValues {
+export interface FormValues {
   currentTimezone: string;
   searchedTimezone: string;
   time: Dayjs;
@@ -21,7 +25,7 @@ const { Text } = Typography;
 
 function App(): JSX.Element {
   const [form] = useForm();
-  const [timezones, setTimezones] = useState<Timezone[]>([]);
+  const [timezones, setTimezones] = useState<TimezoneForSelect[]>([]);
   const [results, setResults] = useState<{
     time: string;
     searchedTime: string;
@@ -31,31 +35,17 @@ function App(): JSX.Element {
   });
 
   const fetchTimezones = async () => {
-    const { data }: any = await getListOfTimeZones();
+    const { data } = await getListOfTimeZones();
     setTimezones(getFormattedTimezones(data?.zones ?? []));
   };
 
   const onFinishHandler = (values: FormValues) => {
-    const utcDate = new Date(
-      Date.UTC(0, 0, 0, (values.time as any).$H, (values.time as any).$m, 0)
-    );
+    const searchedTime = getSearchedTime(values);
 
-    const searchedOffset = JSON.parse(values.searchedTimezone)?.gmtOffset;
-    const currentOffset = JSON.parse(values.currentTimezone)?.gmtOffset;
-
-    if (searchedOffset || searchedOffset === 0) {
-      const date =
-        utcDate.getTime() + (searchedOffset * 1000 - currentOffset * 1000);
-
-      const formattedDate = new Intl.DateTimeFormat("en-US", {
-        hour: "numeric",
-        minute: "numeric",
-        timeZone: "UTC",
-      }).format(date);
-
+    if (searchedTime) {
       setResults({
-        time: values.time.format("HH:mm"),
-        searchedTime: formattedDate,
+        time: values.time.format(TIME_FORMAT),
+        searchedTime: searchedTime,
       });
     } else {
       console.error("something went wrong");
@@ -82,18 +72,31 @@ function App(): JSX.Element {
         className="Form"
         onFinish={onFinishHandler}
         onValuesChange={onValuesChange}
+        layout="vertical"
       >
         <div className="FormItem">
-          <TownSelect timezones={timezones} fieldName="currentTimezone" />
+          <TownSelect
+            timezones={timezones}
+            fieldName="currentTimezone"
+            label="Your location"
+          />
         </div>
         <div className="FormItem">
-          <TownSelect timezones={timezones} fieldName="searchedTimezone" />
+          <TownSelect
+            timezones={timezones}
+            fieldName="searchedTimezone"
+            label="Queried location"
+          />
         </div>
         <div className="FormTimePicker">
-          <Item name="time">
+          <Item
+            name="time"
+            label="Time in you location"
+            rules={[{ required: true }]}
+          >
             <TimePicker
-              defaultOpenValue={dayjs("00:00:00", "HH:mm")}
-              format="HH:mm"
+              defaultOpenValue={dayjs("00:00:00", TIME_FORMAT)}
+              format={TIME_FORMAT}
             />
           </Item>
         </div>

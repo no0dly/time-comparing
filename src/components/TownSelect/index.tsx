@@ -1,22 +1,19 @@
 import { Select, Form } from "antd";
+import { TimezoneForSelect } from "../../utils/getFormattedTimezones";
 
-export interface Timezone {
-  value: string;
+interface Props {
+  timezones: TimezoneForSelect[];
+  fieldName: string;
   label: string;
 }
 
-interface Props {
-  timezones: Timezone[];
-  fieldName: string;
-}
-
-function TownSelect({ timezones, fieldName }: Props): JSX.Element {
+function TownSelect({ timezones, fieldName, label }: Props): JSX.Element {
   return (
-    <Form.Item name={fieldName} rules={[{ required: true }]}>
+    <Form.Item name={fieldName} rules={[{ required: true }]} label={label}>
       <Select
         showSearch
         style={{ width: 200 }}
-        placeholder="Select your town"
+        placeholder="Select city"
         optionFilterProp="children"
         filterOption={(input, option) =>
           (option?.label?.toLowerCase() ?? "").includes(input.toLowerCase())

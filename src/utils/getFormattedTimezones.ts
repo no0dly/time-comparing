@@ -1,11 +1,11 @@
-import { Timezone } from "../components/TownSelect";
+import { Timezone } from "../api";
 
-interface TimezoneFromApi {
-  zoneName: string;
-  gmtOffset: number;
+export interface TimezoneForSelect {
+  value: string;
+  label: string;
 }
 
-export const getFormattedTimezones = (zones: TimezoneFromApi[]): Timezone[] => {
+export const getFormattedTimezones = (zones: Timezone[]): TimezoneForSelect[] => {
   return zones?.map(
     (timezone) => {
       const { zoneName, gmtOffset } = timezone;

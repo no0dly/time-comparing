@@ -8,5 +8,17 @@ const instance = axios.create({
   params: { 'key': API_KEY, format: "json" }
 });
 
-export const getListOfTimeZones = () => instance.get('/list-time-zone');
+export interface Timezone {
+  zoneName: string;
+  gmtOffset: number;
+  countryCode: string;
+  countryName: string;
+  timestamp: number;
+}
+
+interface ListTimezoneResponse {
+  zones: Timezone[]
+}
+
+export const getListOfTimeZones = () => instance.get<ListTimezoneResponse>('/list-time-zone');
 

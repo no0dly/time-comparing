@@ -10,7 +10,7 @@
 
 .Form {
   padding: 30px;
-  width: 600px;
+  max-width: 600px;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -21,9 +21,15 @@
 }
 
 .FormTimePicker {
-  width: 100%;
-  display: flex;
   margin-bottom: 50px;
+}
+
+@media screen and (max-width: 480px) {
+  .FormItem, .FormTimePicker {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .Result {
