@@ -9,10 +9,9 @@ export const getFormattedTimezones = (zones: TimezoneFromApi[]): Timezone[] => {
   return zones?.map(
     (timezone) => {
       const { zoneName, gmtOffset } = timezone;
-      const zoneNameSplitted = zoneName.split("/");
       return {
         value: JSON.stringify({ zoneName, gmtOffset }),
-        label: zoneNameSplitted?.[zoneNameSplitted.length - 1],
+        label: zoneName,
       };
     }
   )

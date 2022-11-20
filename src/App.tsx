@@ -36,7 +36,9 @@ function App(): JSX.Element {
   };
 
   const onFinishHandler = (values: FormValues) => {
-    const utcDate = new Date(Date.UTC(0, 0, 0, 0, 0, 0));
+    const utcDate = new Date(
+      Date.UTC(0, 0, 0, (values.time as any).$H, (values.time as any).$m, 0)
+    );
 
     const searchedOffset = JSON.parse(values.searchedTimezone)?.gmtOffset;
     const currentOffset = JSON.parse(values.currentTimezone)?.gmtOffset;
@@ -62,7 +64,7 @@ function App(): JSX.Element {
 
   const onValuesChange = (value: string, values: FormValues) => {
     if (values.currentTimezone && values.searchedTimezone && values.time) {
-      form.submit();
+      onFinishHandler(values);
     } else {
       setResults({ time: "", searchedTime: "" });
     }
